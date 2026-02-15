@@ -13,6 +13,8 @@ window.publishedResults = []; // Results Data
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log("🚀 Application starting...");
+    
     injectAppStyles(); // Mobile Styles
     renderNavigation();
     
@@ -27,6 +29,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 4. Initialize Specific Page
     const page = document.body.getAttribute('data-page');
+    console.log("📄 Current page:", page);
+    
     if (page === 'home') initHome();
     if (page === 'schedule') initSchedule();
     if (page === 'leaderboard') initLeaderboard();
@@ -42,6 +46,9 @@ async function loadData() {
         try {
             console.log("📂 Loading participants file:", PARTICIPANTS_FILE);
             const pResponse = await fetch(PARTICIPANTS_FILE);
+            if (!pResponse.ok) {
+                throw new Error(`HTTP ${pResponse.status}: ${pResponse.statusText}`);
+            }
             window.allData = await pResponse.json();
             console.log("✅ Loaded participants:", Object.keys(window.allData).length, "programs");
         } catch (e) {
@@ -65,15 +72,22 @@ async function loadData() {
             
             if (rResponse.ok) {
                 const data = await rResponse.json();
-                console.log("📦 Raw response:", data);
+                console.log("📦 Raw response structure:", {
+                    hasRecord: !!data.record,
+                    recordType: Array.isArray(data.record) ? 'array' : typeof data.record,
+                    recordLength: Array.isArray(data.record) ? data.record.length : 'N/A'
+                });
                 
                 // JSONBin returns {record: actualData} format
-                window.publishedResults = data.record || [];
+                window.publishedResults = Array.isArray(data.record) ? data.record : [];
                 console.log("✅ Successfully loaded", window.publishedResults.length, "published results");
-                console.log("📋 Results data:", window.publishedResults);
+                
+                if (window.publishedResults.length > 0) {
+                    console.log("📋 Sample result:", window.publishedResults[0]);
+                }
             } else {
-                const errorData = await rResponse.json();
-                console.error("❌ API Error:", rResponse.status, errorData);
+                const errorText = await rResponse.text();
+                console.error("❌ API Error:", rResponse.status, errorText);
                 window.publishedResults = [];
             }
         } catch (e) {
@@ -91,44 +105,51 @@ async function loadData() {
 
 // --- Score Calculation ---
 function calculateFacultyScores() {
-    window.facultyScores = {};
+    console.log("🔢 Starting score calculation...");
     
-    console.log("Calculating scores from", window.publishedResults.length, "results");
+    // Initialize all faculties with 0 points
+    window.facultyScores = {
+        "ARTS,APPLIED SCIENCE, MUSIC": 0,
+        "BSCHOOL( IMK,LAW,COMMERCE)": 0,
+        "ORIENTAL, EDUCATION": 0,
+        "SCIENCE": 0,
+        "SOCIAL SCIENCE": 0
+    };
     
-    // Step 1: Participation Points (1 pt per entry)
-    if (window.allData) {
-        Object.values(window.allData).flat().forEach(p => {
-            const fac = p.FACULTY ? p.FACULTY.toUpperCase() : "UNKNOWN";
-            if (!window.facultyScores[fac]) window.facultyScores[fac] = 0;
-            window.facultyScores[fac] += 1;
+    console.log("📊 Processing", window.publishedResults.length, "results");
+    
+    // Calculate points ONLY from published results (no participation points)
+    if (window.publishedResults && window.publishedResults.length > 0) {
+        window.publishedResults.forEach((r, index) => {
+            if (r.winner && r.winner.FACULTY) {
+                const fac = r.winner.FACULTY.toUpperCase();
+                if (!window.facultyScores[fac]) window.facultyScores[fac] = 0;
+                
+                // Use stored points or fallback logic
+                const points = r.points ? parseInt(r.points) : (r.position === '1' ? 5 : (r.position === '2' ? 3 : 1));
+                window.facultyScores[fac] += points;
+                console.log(`  [${index + 1}] Added ${points} points to ${fac} for ${r.program}`);
+            } else {
+                console.warn(`  [${index + 1}] Invalid result structure:`, r);
+            }
         });
+    } else {
+        console.warn("⚠️ No published results to process");
     }
-
-    // Step 2: Add Points from Results
-    window.publishedResults.forEach(r => {
-        if (r.winner && r.winner.FACULTY) {
-            const fac = r.winner.FACULTY.toUpperCase();
-            if (!window.facultyScores[fac]) window.facultyScores[fac] = 0;
-            
-            // Use stored points or fallback logic
-            const points = r.points ? parseInt(r.points) : (r.position === '1' ? 5 : (r.position === '2' ? 3 : 1));
-            window.facultyScores[fac] += points;
-            console.log(`Added ${points} points to ${fac} for ${r.program}`);
-        }
-    });
     
-    console.log("Final scores:", window.facultyScores);
+    console.log("🏆 Final faculty scores:", window.facultyScores);
+    console.log("📊 Score breakdown:", Object.entries(window.facultyScores).map(([f, s]) => `${f}: ${s}`).join(', '));
 }
 
 // --- Other Logic (Schedule, Nav, UI) ---
 
 function generateRandomSchedule() {
     const programs = Object.keys(window.allData);
-    const days = [1, 2, 3];
+    const days = [1, 2, 3,4]; // 4 days of events
     window.scheduleData = programs.map(program => {
         // Deterministic Hash for consistent schedule
         const hash = program.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const day = days[hash % 3]; 
+        const day = days[hash % 4]; 
         const hour = 9 + (hash % 8);
         return {
             program: program,
@@ -143,23 +164,146 @@ function generateRandomSchedule() {
 function injectAppStyles() {
     const style = document.createElement('style');
     style.innerHTML = `
-        * { -webkit-tap-highlight-color: transparent; }
-        html { scroll-behavior: smooth; }
-        body { background-color: #f0f2f5; font-family: system-ui, -apple-system, sans-serif; }
-        .pb-safe { padding-bottom: 90px !important; } 
-        .app-bottom-nav {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(0,0,0,0.05);
-            padding: 8px 0 20px 0;
-            box-shadow: 0 -4px 20px rgba(0,0,0,0.03);
-            z-index: 1050;
+        * { 
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
-        .nav-app-link { border: none; background: none; color: #5f6368; display: flex; flex-direction: column; align-items: center; width: 100%; text-decoration: none; }
-        .nav-icon-container { border-radius: 20px; padding: 4px 20px; margin-bottom: 2px; transition: 0.2s; }
-        .nav-app-link.active .nav-icon-container { background-color: #c2e7ff; color: #001d35; }
-        .nav-app-link.active { color: #001d35; font-weight: 600; }
-        .nav-label { font-size: 11px; letter-spacing: 0.3px; }
+        html { scroll-behavior: smooth; }
+        body { 
+            background-color: #f0f2f5; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            overscroll-behavior: none;
+        }
+        .pb-safe { padding-bottom: 85px !important; } 
+        
+        /* Modern Mobile App Bottom Navigation */
+        .app-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-top: 0.5px solid rgba(0, 0, 0, 0.08);
+            padding: 6px 0 max(env(safe-area-inset-bottom), 8px);
+            box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.04);
+            z-index: 1050;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            padding: 0 8px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Individual Nav Item */
+        .nav-app-link {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 6px 4px 2px;
+            text-decoration: none;
+            color: #8e8e93;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border: none;
+            background: none;
+            min-width: 0;
+        }
+        
+        /* Icon Styling */
+        .nav-icon-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            margin-bottom: 4px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .nav-icon-container .material-symbols-outlined {
+            font-size: 26px;
+            font-weight: 400;
+            transition: all 0.2s ease;
+        }
+        
+        /* Label Styling */
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: -0.1px;
+            line-height: 1.2;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+        
+        /* Active State - iOS Style */
+        .nav-app-link.active {
+            color: #007AFF;
+        }
+        
+        .nav-app-link.active .material-symbols-outlined {
+            font-weight: 600;
+            transform: scale(1.05);
+        }
+        
+        .nav-app-link.active .nav-label {
+            font-weight: 600;
+        }
+        
+        /* Tap/Touch Feedback */
+        .nav-app-link:active {
+            transform: scale(0.95);
+            opacity: 0.7;
+        }
+        
+        /* Ripple effect container */
+        .nav-app-link::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(0, 122, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.4s, height 0.4s;
+        }
+        
+        .nav-app-link:active::before {
+            width: 48px;
+            height: 48px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 375px) {
+            .nav-label {
+                font-size: 9px;
+            }
+            .nav-icon-container .material-symbols-outlined {
+                font-size: 24px;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .app-bottom-nav {
+                display: none;
+            }
+        }
     `;
     document.head.appendChild(style);
 }
@@ -173,9 +317,11 @@ function renderNavigation() {
         { name: 'Leaderboard', icon: 'leaderboard', link: 'leaderboard.html', id: 'leaderboard' },
     ];
 
-    const bottomNav = document.createElement('nav');
-    bottomNav.className = "app-bottom-nav fixed-bottom d-md-none";
-    let mobileLinks = '<div class="d-flex justify-content-around align-items-center w-100">';
+    // Mobile Bottom Navigation
+    const bottomNav = document.createElement('div');
+    bottomNav.className = "d-md-none app-bottom-nav";
+    
+    let mobileLinks = '<div class="nav-container">';
     navItems.forEach(item => {
         const isActive = activePage === item.id;
         const iconFill = isActive ? "'FILL' 1" : "'FILL' 0";
@@ -187,9 +333,12 @@ function renderNavigation() {
                 <span class="nav-label">${item.name}</span>
             </a>`;
     });
-    bottomNav.innerHTML = mobileLinks + '</div>';
+    mobileLinks += '</div>';
+    
+    bottomNav.innerHTML = mobileLinks;
     document.body.appendChild(bottomNav);
 
+    // Desktop Top Navigation
     const topNav = document.getElementById('desktop-nav-items');
     if(topNav) {
         let links = '';
@@ -229,7 +378,7 @@ function initSchedule() {
     });
     renderScheduleList(1);
 }
-
+// Renders the schedule list for a given day, showing events and participants with collapsible details
 function renderScheduleList(day) {
     const container = document.getElementById('schedule-container');
     const events = window.scheduleData.filter(s => s.day === day);
@@ -280,12 +429,24 @@ function renderScheduleList(day) {
 }
 
 function initLeaderboard() {
+    console.log("🏆 Initializing leaderboard...");
     const list = document.getElementById('leaderboard-list');
+    
+    if (!list) {
+        console.error("❌ Leaderboard container not found!");
+        return;
+    }
+    
+    console.log("📊 Faculty scores:", window.facultyScores);
+    console.log("📊 Number of faculties:", Object.keys(window.facultyScores).length);
     
     // Sort High to Low
     const sorted = Object.entries(window.facultyScores).sort((a, b) => b[1] - a[1]);
     
+    console.log("📈 Sorted leaderboard:", sorted);
+    
     if (sorted.length === 0) {
+        console.warn("⚠️ No leaderboard data available");
         list.innerHTML = '<div class="text-center text-muted py-5">No points data available yet.</div>';
         return;
     }
@@ -317,6 +478,8 @@ function initLeaderboard() {
             </div>
         </div>`;
     }).join('');
+    
+    console.log("✅ Leaderboard rendered successfully");
 }
 
 function initResults() {
