@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Arts Fest</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" rel="stylesheet">
+    <style>
+        body { 
+            background-color: #f0f2f5; 
+        } 
+        .pb-safe { 
+            padding-bottom: 80px; 
+        }
+        .delete-btn {
+            transition: all 0.2s;
+        }
+        .delete-btn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body data-page="admin" class="pb-safe">
+
+    <nav class="navbar navbar-light bg-white shadow-sm mb-4">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 fw-bold text-danger">Arts Fest Admin</span>
+            <a href="index.html" class="btn btn-sm btn-outline-secondary">Back to Home</a>
+        </div>
+    </nav>
+
+    <div id="login-overlay" class="container d-flex justify-content-center align-items-center" style="height: 80vh;">
+        <div class="card p-4 shadow-lg border-0 rounded-4" style="max-width: 400px; width: 100%;">
+            <div class="text-center mb-4">
+                <span class="material-symbols-outlined display-1 text-danger">lock</span>
+                <h3 class="fw-bold">Admin Access</h3>
+            </div>
+            <div class="mb-3">
+                <input type="password" id="admin-pass" class="form-control form-control-lg text-center" placeholder="Enter Password">
+            </div>
+            <button id="login-btn" class="btn btn-danger w-100 btn-lg rounded-pill">Unlock</button>
+        </div>
+    </div>
+
+    <main id="admin-content" class="container d-none">
+        <div class="row g-4">
+            
+            <div class="col-md-7">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-header bg-white border-0 pt-4 px-4">
+                        <h4 class="fw-bold">Publish Result</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small text-uppercase text-muted">Event Type</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="eventType" id="typeInd" value="individual" checked>
+                                <label class="btn btn-outline-primary" for="typeInd">Individual (5-3-1)</label>
+
+                                <input type="radio" class="btn-check" name="eventType" id="typeGrp" value="group">
+                                <label class="btn btn-outline-primary" for="typeGrp">Group (10-5-3)</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Program Name</label>
+                            <input type="text" id="program-name" class="form-control bg-light border-0" placeholder="Program Name">
+                        </div>
+
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Winner Name</label>
+                                <input type="text" id="winner-name" class="form-control bg-light border-0" placeholder="Student Name">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Faculty</label>
+                                <select id="faculty-select" class="form-select bg-light border-0">
+                                    <option value="">Select Faculty...</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Position</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="position" id="pos1" value="1">
+                                <label class="btn btn-outline-warning py-2" for="pos1">🥇 1st</label>
+
+                                <input type="radio" class="btn-check" name="position" id="pos2" value="2">
+                                <label class="btn btn-outline-secondary py-2" for="pos2">🥈 2nd</label>
+
+                                <input type="radio" class="btn-check" name="position" id="pos3" value="3">
+                                <label class="btn btn-outline-danger py-2" for="pos3">🥉 3rd</label>
+                            </div>
+                            <div id="points-preview" class="text-center mt-2 small fw-bold text-primary">Points: 0</div>
+                        </div>
+
+                        <button id="submit-result" class="btn btn-dark btn-lg w-100 rounded-pill fw-bold">Publish Result</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                        <h5 class="fw-bold mb-0">History</h5>
+                        <button id="download-json" class="btn btn-sm btn-light border">📥 Backup</button>
+                    </div>
+                    <div class="card-body p-0" style="max-height: 600px; overflow-y: auto;">
+                        <ul id="admin-results-list" class="list-group list-group-flush"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./admin.js"></script>
+</body>
+</html>
