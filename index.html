@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>കരാക്കസ് CAMPUS ARTS 2026</title>
+    <title>കരാക്കസ്  CAMPUS ARTS 2026</title>
+    <link rel="icon" type="image/jpeg" href="logo.jpg" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -47,7 +47,7 @@
       <div class="container" style="padding: 12px 16px">
         <a
           class="navbar-brand d-flex align-items-center"
-          href="#"
+          href="index.html"
           style="
             font-family:
               &quot;Google Sans&quot;, &quot;Roboto&quot;, sans-serif;
@@ -64,7 +64,8 @@
           onmouseover="this.style.background = '#F1F3F4'"
           onmouseout="this.style.background = 'transparent'"
         >
-          കരാക്കസ് CAMPUS ARTS 2026
+          <img src="logo.jpg" alt="കരാക്കസ് Logo" style="height: 40px; margin-right: 12px; border-radius: 8px;" />
+          കരാക്കസ്   CAMPUS ARTS 2026
         </a>
         <ul
           class="navbar-nav ms-auto"
@@ -87,11 +88,13 @@
         <div
           class="card-img-overlay d-flex flex-column justify-content-end p-4 p-md-5"
         >
-          <span
-            class="badge bg-info text-dark rounded-pill align-self-start mb-2"
-            >LIVE NOW</span
-          >
-          <h1 class="display-4 fw-bold">കരാക്കസ് CAMPUS ARTS 2026</h1>
+          <div class="d-flex align-items-center mb-3">
+            <img src="logo.jpg" alt="കരാക്കസ് Logo" style="height: 60px; margin-right: 16px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);" />
+            <div>
+              <span class="badge bg-info text-dark rounded-pill mb-2">LIVE NOW</span>
+              <h1 class="display-5 fw-bold mb-0">കരാക്കസ്  CAMPUS ARTS 2026</h1>
+            </div>
+          </div>
           <p class="fs-5 mb-0 opacity-75">
             Celebrating creativity across campus.
           </p>
@@ -101,30 +104,32 @@
       <div class="row g-3">
         <div class="col-md-6">
           <div
-            class="card h-100 border-0 bg-primary-subtle text-primary-emphasis rounded-5 p-3"
+            class="card h-100 border-0 bg-primary-subtle text-primary-emphasis rounded-5 p-3 shadow-sm"
           >
             <div class="card-body d-flex flex-column justify-content-between">
               <div>
-                <div class="d-flex align-items-center mb-2">
+                <div class="d-flex align-items-center mb-3">
                   <span class="material-symbols-outlined me-2">schedule</span>
                   <span class="small fw-bold text-uppercase">Up Next</span>
                 </div>
-                <h2 class="card-title fw-bold" id="next-program-title">
+                <h3 class="card-title fw-bold mb-3" id="next-program-title">
                   Loading...
-                </h2>
+                </h3>
               </div>
-              <div class="d-flex justify-content-between align-items-end mt-4">
-                <div>
-                  <h4 class="mb-0" id="next-program-time">--:--</h4>
-                  <small class="opacity-75" id="next-program-venue"
-                    >Stage --</small
-                  >
+              <div class="mt-3">
+                <div class="d-flex align-items-center mb-2">
+                  <span class="material-symbols-outlined me-2" style="font-size: 20px;">schedule</span>
+                  <h5 class="mb-0 fw-bold" id="next-program-time">--:--</h5>
+                </div>
+                <div class="d-flex align-items-start">
+                  <span class="material-symbols-outlined me-2" style="font-size: 20px;">location_on</span>
+                  <small class="fw-medium" id="next-program-venue" style="line-height: 1.4;">Stage --</small>
                 </div>
                 <a
                   href="schedule.html"
-                  class="btn btn-primary rounded-circle p-0 d-flex align-items-center justify-content-center"
-                  style="width: 48px; height: 48px"
+                  class="btn btn-primary rounded-pill px-4 py-2 mt-3 d-inline-flex align-items-center"
                 >
+                  <span class="me-2">View Full Schedule</span>
                   <span class="material-symbols-outlined">arrow_forward</span>
                 </a>
               </div>
@@ -134,22 +139,30 @@
 
         <div class="col-md-6">
           <div
-            class="card h-100 border-0 bg-danger-subtle text-danger-emphasis rounded-5 p-3"
+            class="card h-100 border-0 bg-danger-subtle text-danger-emphasis rounded-5 p-3 shadow-sm"
           >
             <div class="card-body position-relative">
-              <div class="d-flex align-items-center mb-2">
+              <div class="d-flex align-items-center mb-3">
                 <span class="material-symbols-outlined me-2">leaderboard</span>
                 <span class="small fw-bold text-uppercase"
                   >Leading Faculty</span
                 >
               </div>
-              <h2 class="display-6 fw-bold" id="top-faculty-name">
+              <h2 class="display-6 fw-bold mb-3" id="top-faculty-name">
                 Loading...
               </h2>
 
               <div class="mt-4">
                 <div class="fs-4 fw-bold" id="top-faculty-score">0 Pts</div>
               </div>
+
+              <a
+                href="leaderboard.html"
+                class="btn btn-danger rounded-pill px-4 py-2 mt-3 d-inline-flex align-items-center"
+              >
+                <span class="me-2">View Leaderboard</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </a>
 
               <div
                 class="position-absolute bottom-0 end-0 p-3 opacity-25 display-1 fw-bold lh-1"

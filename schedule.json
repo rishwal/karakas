@@ -1,0 +1,574 @@
+{
+  "festival_name": "Arts Festival Schedule",
+  "days": [
+    {
+      "day": 1,
+      "date": "17/02/2026",
+      "stages": [
+        {
+          "stage_number": 6,
+          "stage_name": "HAITI",
+          "venue": "EVS SEMINAR HALL",
+          "events": [
+            {
+              "event": "MALAYALAM ESSAY",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "MALAYALAM SHORT STORY",
+              "time": "12:15 PM - 1:15 PM"
+            },
+            {
+              "event": "MALAYALAM POETRY",
+              "time": "2:00 PM - 3:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 7,
+          "stage_name": "PANAMA",
+          "venue": "MALAYALAM SEMINAR HALL",
+          "events": [
+            {
+              "event": "HINDI POETRY",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "HINDI SHORT STORY",
+              "time": "12:15 PM - 1:15 PM"
+            },
+            {
+              "event": "CARTOONING",
+              "time": "3:00 PM - 5:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_name": "MALAYALAM ROOM - 1",
+          "events": [
+            {
+              "event": "TAMIL SHORT STORY",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "TAMIL ESSAY",
+              "time": "12:15 PM - 1:15 PM"
+            },
+            {
+              "event": "TAMIL POETRY",
+              "time": "2:00 PM - 3:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_name": "MALAYALAM ROOM - 2",
+          "events": [
+            {
+              "event": "SANSKRIT POETRY",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "SANSKRIT SHORT STORY",
+              "time": "12:15 PM - 1:15 PM"
+            },
+            {
+              "event": "HINDI ESSAY WRITING",
+              "time": "2:00 PM - 3:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 5,
+          "stage_name": "GREENLAND",
+          "venue": "AQUATIC BIOLOGY SEMINAR HALL",
+          "events": [
+            {
+              "event": "ENGLISH POETRY",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "ENGLISH SHORT STORY",
+              "time": "12:15 PM - 1:15 PM"
+            },
+            {
+              "event": "ENGLISH ESSAY WRITING",
+              "time": "2:00 PM - 3:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 8,
+          "stage_name": "LIBYA",
+          "venue": "HINDI SEMINAR HALL",
+          "events": [
+            {
+              "event": "ARABIC SHORT STORY",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "ARABIC POETRY",
+              "time": "12:15 PM - 1:15 PM"
+            },
+            {
+              "event": "SANSKRIT ELOCUTION",
+              "time": "2:00 PM - 2:30 PM"
+            },
+            {
+              "event": "SANSKRIT RECITATION",
+              "time": "2:30 PM - 3:30 PM"
+            },
+            {
+              "event": "AKSHARASLOKAM SANSKRIT",
+              "time": "3:30 PM - 5:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 2,
+          "stage_name": "CUBA",
+          "venue": "JUBILEE HALL",
+          "events": [
+            {
+              "event": "COLLAGE MAKING",
+              "time": "11:00 AM - 1:30 PM"
+            },
+            {
+              "event": "RANGOLI",
+              "time": "2:30 PM - 5:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 13,
+          "stage_name": "SOMALIA",
+          "venue": "ONV OPEN AUDITORIUM",
+          "events": [
+            {
+              "event": "CLAY MODELING",
+              "time": "11:00 AM - 2:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 4,
+          "stage_name": "MEXICO",
+          "venue": "E.K JANAKI AMMAL HALL, CLIF",
+          "events": [
+            {
+              "event": "ENGLISH RECITATION",
+              "time": "3:00 PM - 5:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 3,
+          "stage_name": "VIETNAM",
+          "venue": "CV RAMAN HALL, CLIF",
+          "events": [
+            {
+              "event": "MALAYALAM RECITATION",
+              "time": "3:00 PM - 5:00 PM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "stages": [
+        {
+          "stage_number": 1,
+          "stage_name": "VENEZUELA",
+          "venue": "EMS HALL",
+          "events": [
+            {
+              "event": "BHARATHANATYAM",
+              "time": "9:30 AM - 11:00 AM"
+            },
+            {
+              "event": "KERALANADANAM GROUP",
+              "time": "11:00 AM - 11:30 AM"
+            },
+            {
+              "event": "KUCHIPUDI",
+              "time": "11:30 AM - 12:00 PM"
+            },
+            {
+              "event": "GROUP DANCE",
+              "time": "12:00 PM - 1:00 PM"
+            },
+            {
+              "event": "MOHINIYATTAM",
+              "time": "1:00 PM - 1:45 PM"
+            },
+            {
+              "event": "FOLK DANCE",
+              "time": "2:15 PM - 3:30 PM"
+            },
+            {
+              "event": "KERALANADANAM SOLO",
+              "time": "3:30 PM - 4:30 PM"
+            },
+            {
+              "event": "THIRUVATHIRA",
+              "time": "7:00 PM - 8:00 PM"
+            },
+            {
+              "event": "CINEMATIC DANCE",
+              "time": "9:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 8,
+          "stage_name": "LIBYA",
+          "venue": "HINDI",
+          "events": [
+            {
+              "event": "POSTER MAKING",
+              "time": "9:30 AM - 12:00 PM"
+            },
+            {
+              "event": "PAINTING",
+              "time": "12:15 PM - 2:15 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 9,
+          "stage_name": "KOREA",
+          "venue": "FYUGP",
+          "events": [
+            {
+              "event": "SPOT PHOTOGRAPHY",
+              "time": "10:30 AM - 1:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 3,
+          "stage_name": "VIETNAM",
+          "venue": "CLIFF CV RAMAN",
+          "events": [
+            {
+              "event": "ELOCUTION TAMIL",
+              "time": "9:30 AM - 10:15 AM"
+            },
+            {
+              "event": "RECITATION TAMIL",
+              "time": "10:20 AM - 11:30 AM"
+            },
+            {
+              "event": "AKSHARASLOKAM MALAYALAM",
+              "time": "11:30 AM - 1:00 PM"
+            },
+            {
+              "event": "ELOCUTION MALAYALAM",
+              "time": "2:00 PM - 4:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 4,
+          "stage_name": "MEXICO",
+          "venue": "EK JANAKI AMMAL HALL",
+          "events": [
+            {
+              "event": "ELOCUTION HINDI",
+              "time": "9:30 AM - 10:00 AM"
+            },
+            {
+              "event": "RECITATION HINDI",
+              "time": "10:00 AM - 10:30 AM"
+            },
+            {
+              "event": "ELOCUTION ARABIC",
+              "time": "10:45 AM - 11:00 AM"
+            },
+            {
+              "event": "RECITATION ARABIC",
+              "time": "11:00 AM - 12:00 PM"
+            },
+            {
+              "event": "AKSHARASLOKAM ARABIC",
+              "time": "12:00 PM - 1:30 PM"
+            },
+            {
+              "event": "ELOCUTION ENGLISH",
+              "time": "2:00 PM - 4:00 PM"
+            },
+            {
+              "event": "KALAJADHA",
+              "time": "4:30 PM - 6:00 PM"
+            },
+            {
+              "event": "INAUGRATION",
+              "time": "6:00 PM - 7:00 PM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "stages": [
+        {
+          "stage_number": 1,
+          "stage_name": "VENEZUELA",
+          "venue": "EMS HALL",
+          "events": [
+            {
+              "event": "OTTAMTHULLAL",
+              "time": "9:30 AM - 10:15 AM"
+            },
+            {
+              "event": "CHAKYARKOOTHU",
+              "time": "10:15 AM - 11:00 AM"
+            },
+            {
+              "event": "NANGYARKOOTHU",
+              "time": "11:00 AM - 11:30 AM"
+            },
+            {
+              "event": "KATHAKALI",
+              "time": "11:30 AM - 1:00 PM"
+            },
+            {
+              "event": "WESTERN VOCAL GROUP",
+              "time": "2:00 PM - 3:00 PM"
+            },
+            {
+              "event": "GANAMELA",
+              "time": "3:00 PM - 4:00 PM"
+            },
+            {
+              "event": "VRINDHAVADYAM",
+              "time": "4:00 PM - 5:00 PM"
+            },
+            {
+              "event": "GROUP SONG",
+              "time": "5:00 PM - 6:00 PM"
+            },
+            {
+              "event": "RAMP WALK",
+              "time": "7:00 PM - 8:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 2,
+          "stage_name": "CUBA",
+          "venue": "JUBILEE HALL",
+          "events": [
+            {
+              "event": "MARGAMKALI",
+              "time": "9:30 AM - 10:45 AM"
+            },
+            {
+              "event": "ARABANAMUTT",
+              "time": "12:00 PM - 1:00 PM"
+            },
+            {
+              "event": "KOLKALI",
+              "time": "1:00 PM - 2:00 PM"
+            },
+            {
+              "event": "OPPANA",
+              "time": "3:00 PM - 4:00 PM"
+            },
+            {
+              "event": "VATTAPATTU",
+              "time": "4:00 PM - 5:00 PM"
+            },
+            {
+              "event": "DUFFMUTT",
+              "time": "5:00 PM - 6:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 3,
+          "stage_name": "VIETNAM",
+          "venue": "CV RAMAN HALL",
+          "events": [
+            {
+              "event": "MAPILAPATTU",
+              "time": "10:00 AM - 11:30 AM"
+            }
+          ]
+        },
+        {
+          "stage_number": 4,
+          "stage_name": "MEXICO",
+          "venue": "E.K JANAKI AMMAL",
+          "events": [
+            {
+              "event": "LIGHT MUSIC",
+              "time": "9:30 AM - 11:30 AM"
+            },
+            {
+              "event": "WESTERN VOCAL SOLO",
+              "time": "11:30 AM - 12:30 PM"
+            },
+            {
+              "event": "CLASSICAL MUSIC",
+              "time": "1:00 PM - 3:00 PM"
+            },
+            {
+              "event": "GAZAL",
+              "time": "3:30 PM - 4:30 PM"
+            },
+            {
+              "event": "HINDUSTHANI",
+              "time": "4:30 PM - 5:30 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 5,
+          "stage_name": "GREENLAND",
+          "venue": "AQUATIC SEMINAR HALL",
+          "events": [
+            {
+              "event": "VEENA",
+              "time": "9:30 AM - 9:45 AM"
+            },
+            {
+              "event": "STRINGED EASTERN",
+              "time": "9:45 AM - 10:10 AM"
+            },
+            {
+              "event": "STRINGED WESTERN",
+              "time": "10:10 AM - 10:50 AM"
+            },
+            {
+              "event": "GUITAR",
+              "time": "10:50 AM - 11:15 AM"
+            },
+            {
+              "event": "WIND EASTERN",
+              "time": "11:15 AM - 11:35 AM"
+            },
+            {
+              "event": "WIND WESTERN",
+              "time": "11:35 AM - 12:00 PM"
+            },
+            {
+              "event": "TABALA",
+              "time": "12:00 PM - 12:20 PM"
+            },
+            {
+              "event": "PERCUSSION WESTERN",
+              "time": "12:20 PM - 12:40 PM"
+            },
+            {
+              "event": "PERCUSION EASTERN",
+              "time": "12:40 PM - 1:00 PM"
+            },
+            {
+              "event": "CHENDA",
+              "time": "1:00 PM - 1:30 PM"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "stages": [
+        {
+          "stage_number": 12,
+          "stage_name": "IRAQ",
+          "venue": "BIOINFORMATICS",
+          "events": [
+            {
+              "event": "DEBATE ENGLISH",
+              "time": "9:30 AM - 11:30 AM"
+            },
+            {
+              "event": "DEBATE MALAYALAM",
+              "time": "11:30 AM - 1:30 PM"
+            },
+            {
+              "event": "DEBATE HINDI",
+              "time": "2:00 PM - 4:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 6,
+          "stage_name": "HAITI",
+          "venue": "EVS SEMINAR HALL",
+          "events": [
+            {
+              "event": "QUIZ",
+              "time": "11:00 AM"
+            }
+          ]
+        },
+        {
+          "stage_number": 1,
+          "stage_name": "VENEZUELA",
+          "venue": "EMS HALL",
+          "events": [
+            {
+              "event": "MONO ACT",
+              "time": "9:30 AM - 11:00 AM"
+            },
+            {
+              "event": "MIMICRY",
+              "time": "11:00 AM - 12:30 PM"
+            },
+            {
+              "event": "VANCHIPATTU",
+              "time": "2:00 PM - 3:00 PM"
+            },
+            {
+              "event": "FOLK SONG",
+              "time": "3:00 PM - 4:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 2,
+          "stage_name": "CUBA",
+          "venue": "JUBILIE HALL",
+          "events": [
+            {
+              "event": "MIME",
+              "time": "10:00 AM - 11:00 AM"
+            },
+            {
+              "event": "SKIT",
+              "time": "11:30 AM - 1:00 PM"
+            },
+            {
+              "event": "FANCY DRESS",
+              "time": "1:00 PM - 2:00 PM"
+            }
+          ]
+        },
+        {
+          "stage_number": 10,
+          "stage_name": "AFGANISTHAN",
+          "venue": "COMMERCE",
+          "events": [
+            {
+              "event": "KADHAPRANSANGAM",
+              "time": "10:00 AM - 11:30 AM"
+            }
+          ]
+        },
+        {
+          "venue": "LIBRARY FRONT",
+          "events": [
+            {
+              "event": "STREET PLAY",
+              "time": "4:00 PM"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

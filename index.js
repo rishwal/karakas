@@ -95,7 +95,7 @@ async function loadData() {
             window.publishedResults = [];
         }
 
-        generateRandomSchedule();
+        await generateRandomSchedule();
         console.log("✅ Data loading complete");
 
     } catch (error) {
@@ -143,22 +143,70 @@ function calculateFacultyScores() {
 
 // --- Other Logic (Schedule, Nav, UI) ---
 
-function generateRandomSchedule() {
-    const programs = Object.keys(window.allData);
-    const days = [1, 2, 3,4]; // 4 days of events
-    window.scheduleData = programs.map(program => {
-        // Deterministic Hash for consistent schedule
-        const hash = program.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const day = days[hash % 4]; 
-        const hour = 9 + (hash % 8);
-        return {
-            program: program,
-            day: day,
-            time: `${hour > 12 ? hour - 12 : hour}:00 ${hour >= 12 ? 'PM' : 'AM'}`,
-            venue: `Stage ${(hash % 4) + 1}`,
-            timestamp: new Date(`2026-02-${19 + day}T${hour.toString().padStart(2,'0')}:00:00`)
-        };
-    }).sort((a, b) => a.timestamp - b.timestamp);
+async function generateRandomSchedule() {
+    try {
+        console.log("📅 Loading schedule from schedule.json...");
+        const response = await fetch('schedule.json');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const scheduleJSON = await response.json();
+        console.log("✅ Schedule data loaded:", scheduleJSON);
+        
+        // Transform the schedule data into the format expected by the app
+        window.scheduleData = [];
+        
+        scheduleJSON.days.forEach(dayData => {
+            dayData.stages.forEach(stage => {
+                stage.events.forEach(event => {
+                    // Parse time to create timestamp (use start time)
+                    const timeStr = event.time.split(' - ')[0]; // Get start time only
+                    const timeMatch = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+                    if (timeMatch) {
+                        let hour = parseInt(timeMatch[1]);
+                        const minute = parseInt(timeMatch[2]);
+                        const period = timeMatch[3].toUpperCase();
+                        
+                        // Convert to 24-hour format
+                        if (period === 'PM' && hour !== 12) hour += 12;
+                        if (period === 'AM' && hour === 12) hour = 0;
+                        
+                        // Create cleaner stage/venue display
+                        let venueDisplay = '';
+                        if (stage.stage_number && stage.stage_name && stage.venue) {
+                            venueDisplay = `Stage ${stage.stage_number} - ${stage.stage_name} (${stage.venue})`;
+                        } else if (stage.stage_name && stage.venue) {
+                            venueDisplay = `${stage.stage_name} (${stage.venue})`;
+                        } else if (stage.stage_name) {
+                            venueDisplay = stage.stage_name;
+                        } else if (stage.venue) {
+                            venueDisplay = stage.venue;
+                        } else {
+                            venueDisplay = 'Venue TBA';
+                        }
+                        
+                        window.scheduleData.push({
+                            program: event.event,
+                            day: dayData.day,
+                            time: event.time,
+                            venue: venueDisplay,
+                            timestamp: new Date(`2026-02-${16 + dayData.day}T${hour.toString().padStart(2,'0')}:${minute.toString().padStart(2,'0')}:00`)
+                        });
+                    }
+                });
+            });
+        });
+        
+        // Sort by timestamp
+        window.scheduleData.sort((a, b) => a.timestamp - b.timestamp);
+        console.log("✅ Processed", window.scheduleData.length, "events");
+        
+    } catch (error) {
+        console.error("❌ Error loading schedule:", error);
+        // Fallback to empty schedule
+        window.scheduleData = [];
+    }
 }
 
 function injectAppStyles() {
@@ -358,11 +406,29 @@ function initHome() {
         document.getElementById('top-faculty-name').innerText = sorted[0][0];
         document.getElementById('top-faculty-score').innerText = `${sorted[0][1]} Pts`;
     }
-    const now = new Date("2026-02-20T09:00:00"); 
+    
+    // Get current time or use a reference time for testing
+    const now = new Date(); 
+    // For testing with your schedule dates, you can use: new Date("2026-02-17T10:00:00");
+    
     const nextEvent = window.scheduleData.find(s => s.timestamp > now);
     if (nextEvent) {
         document.getElementById('next-program-title').innerText = nextEvent.program;
-        document.getElementById('next-program-time').innerText = `${nextEvent.time}`;
+        document.getElementById('next-program-time').innerText = nextEvent.time;
+        
+        // Update venue if element exists
+        const venueElement = document.getElementById('next-program-venue');
+        if (venueElement) {
+            venueElement.innerText = nextEvent.venue;
+        }
+    } else {
+        // No upcoming events
+        document.getElementById('next-program-title').innerText = "No upcoming events";
+        document.getElementById('next-program-time').innerText = "--:--";
+        const venueElement = document.getElementById('next-program-venue');
+        if (venueElement) {
+            venueElement.innerText = "All events completed";
+        }
     }
 }
 
@@ -383,47 +449,122 @@ function renderScheduleList(day) {
     const container = document.getElementById('schedule-container');
     const events = window.scheduleData.filter(s => s.day === day);
     container.innerHTML = '';
-    if(events.length === 0) { container.innerHTML = '<div class="text-center mt-5 text-muted">No events.</div>'; return; }
+    if(events.length === 0) { container.innerHTML = '<div class="text-center mt-5 text-muted">No events scheduled for this day.</div>'; return; }
 
     events.forEach(event => {
-        const participants = window.allData[event.program] || [];
+        // Try to match participants with better matching logic
+        let participants = [];
+        const eventName = event.program;
+        
+        // Try exact match first
+        if (window.allData[eventName]) {
+            participants = window.allData[eventName];
+        } else {
+            // Try case-insensitive match or partial match
+            const keys = Object.keys(window.allData);
+            const matchedKey = keys.find(key => 
+                key.toLowerCase() === eventName.toLowerCase() ||
+                key.toLowerCase().includes(eventName.toLowerCase()) ||
+                eventName.toLowerCase().includes(key.toLowerCase())
+            );
+            if (matchedKey) {
+                participants = window.allData[matchedKey];
+            }
+        }
+        
         const result = window.publishedResults.find(r => r.program === event.program);
         const badge = result ? '<span class="badge bg-success mb-2 rounded-pill px-3">Result Published</span>' : '';
 
         const card = document.createElement('div');
         card.className = "card border-0 shadow-sm mb-3 rounded-4";
-        card.innerHTML = `
-            <div class="card-body p-3">
-                ${badge}
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="overflow-hidden me-2">
-                        <h6 class="fw-bold mb-1 text-dark text-truncate">${event.program}</h6>
-                        <p class="text-muted small mb-0">${event.time} • ${event.venue}</p>
-                    </div>
-                    <button class="btn btn-light rounded-circle toggle-btn text-primary flex-shrink-0" style="width:40px;height:40px;"><span class="material-symbols-outlined">expand_more</span></button>
-                </div>
-                <div class="details collapse mt-3 pt-3 border-top">
-                    <h6 class="text-muted small fw-bold">Participants (${participants.length})</h6>
-                    <div class="vstack gap-2">
-                        ${participants.map(p => `
-                            <div class="d-flex align-items-center bg-light p-2 rounded-3">
-                                <div class="rounded-circle bg-white text-primary fw-bold border d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">${p.NAME.charAt(0)}</div>
-                                <div class="small fw-bold text-truncate">${p.NAME}</div>
-                            </div>`).join('')}
-                    </div>
-                </div>
-            </div>`;
         
-        const btn = card.querySelector('.toggle-btn');
-        const details = card.querySelector('.details');
-        const bsCollapse = new bootstrap.Collapse(details, { toggle: false });
-        btn.addEventListener('click', () => {
-            bsCollapse.toggle();
-            const icon = btn.querySelector('span');
-            setTimeout(() => {
-                icon.innerText = details.classList.contains('show') ? 'expand_less' : 'expand_more';
-            }, 200);
-        });
+        // Show participant details if we have participants for this program
+        if (participants.length > 0) {
+            card.innerHTML = `
+                <div class="card-body p-3">
+                    ${badge}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="overflow-hidden me-2 flex-grow-1">
+                            <h6 class="fw-bold mb-2 text-dark">${event.program}</h6>
+                            <div class="d-flex align-items-center text-muted small mb-1">
+                                <span class="material-symbols-outlined me-1" style="font-size: 16px;">schedule</span>
+                                <span class="fw-medium">${event.time}</span>
+                            </div>
+                            <div class="d-flex align-items-start text-muted small mb-2">
+                                <span class="material-symbols-outlined me-1" style="font-size: 16px;">location_on</span>
+                                <span class="fw-medium" style="line-height: 1.3;">${event.venue}</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-primary-subtle text-primary rounded-pill px-3 py-2">
+                                    <span class="material-symbols-outlined me-1" style="font-size: 14px; vertical-align: text-bottom;">group</span>
+                                    ${participants.length} Registered
+                                </span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary rounded-circle toggle-btn flex-shrink-0" style="width:44px;height:44px;">
+                            <span class="material-symbols-outlined">expand_more</span>
+                        </button>
+                    </div>
+                    <div class="details collapse mt-3">
+                        <div class="border-top pt-3">
+                            <h6 class="text-muted small fw-bold mb-3">
+                                <span class="material-symbols-outlined me-1" style="font-size: 16px; vertical-align: text-bottom;">group</span>
+                                Participants (${participants.length})
+                            </h6>
+                            <div class="vstack gap-2" style="max-height: 400px; overflow-y: auto;">
+                                ${participants.map((p, idx) => `
+                                    <div class="d-flex align-items-center bg-light p-3 rounded-3">
+                                        <div class="rounded-circle bg-primary text-white fw-bold d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; font-size: 0.9rem;">
+                                            ${p.NAME.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-dark">${p.NAME}</div>
+                                            <div class="small text-muted">${p.DEPARTMENT || 'N/A'}</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-light text-dark border">${p.FACULTY || 'N/A'}</span>
+                                        </div>
+                                    </div>`).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            
+            const btn = card.querySelector('.toggle-btn');
+            const details = card.querySelector('.details');
+            const bsCollapse = new bootstrap.Collapse(details, { toggle: false });
+            btn.addEventListener('click', () => {
+                bsCollapse.toggle();
+                const icon = btn.querySelector('span');
+                setTimeout(() => {
+                    icon.innerText = details.classList.contains('show') ? 'expand_less' : 'expand_more';
+                }, 200);
+            });
+        } else {
+            // No participants - just show event details without toggle
+            card.innerHTML = `
+                <div class="card-body p-3">
+                    ${badge}
+                    <div>
+                        <h6 class="fw-bold mb-2 text-dark">${event.program}</h6>
+                        <div class="d-flex align-items-center text-muted small mb-1">
+                            <span class="material-symbols-outlined me-1" style="font-size: 16px;">schedule</span>
+                            <span class="fw-medium">${event.time}</span>
+                        </div>
+                        <div class="d-flex align-items-start text-muted small mb-2">
+                            <span class="material-symbols-outlined me-1" style="font-size: 16px;">location_on</span>
+                            <span class="fw-medium" style="line-height: 1.3;">${event.venue}</span>
+                        </div>
+                        <div>
+                            <span class="badge bg-secondary-subtle text-secondary rounded-pill px-3 py-2">
+                                <span class="material-symbols-outlined me-1" style="font-size: 14px; vertical-align: text-bottom;">info</span>
+                                No registrations yet
+                            </span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+        
         container.appendChild(card);
     });
 }
@@ -497,8 +638,8 @@ function initResults() {
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm rounded-4 h-100">
                 <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between">
-                    <span class="badge bg-primary-subtle text-primary">OFFICIAL</span>
-                    <small class="text-muted">${new Date(r.timestamp).toLocaleDateString()}</small>
+                     
+                    <b class="text-muted">${new Date(r.timestamp).toLocaleDateString()}</b>
                 </div>
                 <div class="card-body px-4 pb-4 pt-2">
                     <h5 class="fw-bold mb-3">${r.program}</h5>
