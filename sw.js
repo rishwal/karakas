@@ -1,32 +1,98 @@
-const CACHE_NAME = 'arts-fest-v1';
+const CACHE_NAME = 'arts-fest-v2'; // ← bump this on every deploy
 
-// 1. Install - Skip waiting so new SW activates immediately
+const ASSETS_TO_CACHE = [
+  './',
+  './index.html',
+  './schedule.html',
+  './leaderboard.html',
+  './result.html',
+  './admin.html',
+  './index.js',
+  './admin.js',
+  './schedule.json',
+  './program_wise_participant_list.json',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
+  'https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined'
+];
+
+// Treat these as "always fresh" — network first
+const NETWORK_FIRST = ['.html', '.js', '.json'];
+
+// ── 1. INSTALL ──────────────────────────────────────────────────────────────
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log('[SW] Caching all assets');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
+  self.skipWaiting(); // activate immediately, don't wait for old SW to die
 });
 
-// 2. Activate - Clear ALL old caches immediately
+// ── 2. ACTIVATE ─────────────────────────────────────────────────────────────
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          return caches.delete(cache); // Delete everything
-        })
-      );
-    }).then(() => self.clients.claim()) // Take control immediately
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME) // delete every old cache
+          .map((name) => {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          })
+      )
+    )
   );
+  self.clients.claim(); // take control of all open tabs immediately
 });
 
-// 3. Fetch - Always go to network, never serve from cache
+// ── 3. FETCH ─────────────────────────────────────────────────────────────────
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // ── JSONBin API → Network only, never cache ──────────────────────────────
+  if (url.hostname.includes('jsonbin.io')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // ── External CDN (Bootstrap, Fonts) → Cache first (they never change) ────
+  if (!url.hostname.includes('localhost') && !url.hostname.includes('127.0.0.1')) {
+    event.respondWith(
+      caches.match(event.request).then(
+        (cached) => cached || fetch(event.request)
+      )
+    );
+    return;
+  }
+
+  // ── Local HTML / JS / JSON → Network first, cache as fallback ────────────
+  const isNetworkFirst = NETWORK_FIRST.some((ext) =>
+    url.pathname.endsWith(ext) || url.pathname === '/' || url.pathname.endsWith('/')
+  );
+
+  if (isNetworkFirst) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          // Update cache with the fresh version
+          const clone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          return networkResponse;
+        })
+        .catch(() => {
+          console.log('[SW] Offline – serving from cache:', url.pathname);
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // ── Everything else → Cache first, network fallback ──────────────────────
   event.respondWith(
-    fetch(event.request).catch(() => {
-      // If network fails, return a simple offline message
-      return new Response('Network error - please check your connection.', {
-        status: 503,
-        statusText: 'Service Unavailable',
-      });
-    })
+    caches.match(event.request).then(
+      (cached) => cached || fetch(event.request)
+    )
   );
 });
