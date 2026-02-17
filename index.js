@@ -59,7 +59,7 @@ async function loadData() {
         // B. Fetch Results from JSONBin (Cloud Database)
         try {
             const apiUrl = `https://api.jsonbin.io/v3/b/${BIN_ID}/latest`;
-            console.log("🌐 Fetching results from:", apiUrl);
+            console.log(" Fetching results from:", apiUrl);
             
             const rResponse = await fetch(apiUrl, {
                 method: 'GET',
@@ -636,14 +636,113 @@ function initResults() {
         </div>`;
     }).join('');
 }
-function openModal(src) {
-  document.getElementById('imageModal').style.display = 'flex';
-  document.getElementById('modalImage').src = src;
-}
+//   https://drive.google.com/uc?id=FILE_ID
+  function driveUrlToThumb(shareUrl) {
+    var match =
+      shareUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) ||   // /file/d/ID/
+      shareUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);          // ?id=ID or &id=ID
+    if (!match) return shareUrl; // fallback: return as-is
+    var id = match[1];
+    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w400';
+  }
 
-function closeModal() {
-  document.getElementById('imageModal').style.display = 'none';
-}
+  var _images = [];
+  var _index  = 0;
+
+  // ── Fetch gallery.json and build rows ───────────────────────
+  fetch('./gallery.json')
+    .then(function(res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function(days) {
+      document.getElementById('galleryLoading').remove();
+      var root = document.getElementById('galleryRoot');
+
+      days.forEach(function(day) {
+        var label = document.createElement('div');
+        label.className = 'gallery-day-label';
+        label.textContent = day.label;
+
+        var row = document.createElement('div');
+        row.className = 'gallery-scroll-row';
+
+        day.images.forEach(function(item, i) {
+          var thumbSrc = driveUrlToThumb(item.url);
+
+          var img = document.createElement('img');
+          img.src     = thumbSrc;
+          img.alt     = item.caption || (day.label + ' photo ' + (i + 1));
+          img.loading = 'lazy';
+          img.title   = item.caption || '';
+          img.onerror = function() {
+            this.style.opacity = '0.2';
+            this.style.filter  = 'grayscale(1)';
+          };
+          img.onclick = (function(dayImages, idx) {
+            return function() { openModal(dayImages, idx); };
+          })(day.images, i);
+
+          row.appendChild(img);
+        });
+
+        root.appendChild(label);
+        root.appendChild(row);
+      });
+    })
+    .catch(function(err) {
+      document.getElementById('galleryLoading').textContent =
+        '⚠ Could not load gallery.json — make sure it\'s in the same folder.';
+      console.error('Gallery load error:', err);
+    });
+
+  // ── Modal ────────────────────────────────────────────────────
+  function openModal(images, idx) {
+    _images = images;
+    _index  = idx;
+    renderModal();
+    document.getElementById('imageModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('imageModal').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  function modalNav(dir) {
+    var next = _index + dir;
+    if (next < 0 || next >= _images.length) return;
+    _index = next;
+    renderModal();
+  }
+
+  function renderModal() {
+    var item = _images[_index];
+    document.getElementById('modalImage').src           = driveUrlToThumb(item.url);
+    document.getElementById('modalCaption').textContent = item.caption || '';
+    document.getElementById('modalCounter').textContent = (_index + 1) + ' / ' + _images.length;
+    document.getElementById('modalPrev').style.opacity  = _index === 0 ? '0.2' : '1';
+    document.getElementById('modalNext').style.opacity  = _index === _images.length - 1 ? '0.2' : '1';
+  }
+
+  // Keyboard
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('imageModal').style.display !== 'flex') return;
+    if (e.key === 'ArrowLeft')  modalNav(-1);
+    if (e.key === 'ArrowRight') modalNav(1);
+    if (e.key === 'Escape')     closeModal();
+  });
+
+  // Touch swipe
+  var _tx = 0;
+  document.getElementById('imageModal').addEventListener('touchstart', function(e) {
+    _tx = e.touches[0].clientX;
+  }, { passive: true });
+  document.getElementById('imageModal').addEventListener('touchend', function(e) {
+    var dx = e.changedTouches[0].clientX - _tx;
+    if (Math.abs(dx) > 50) modalNav(dx < 0 ? 1 : -1);
+  });
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
